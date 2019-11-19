@@ -83,45 +83,159 @@ export default {
   routes: [
     {
       path: '/',
-      component: '../layouts/BasicLayout',
-      Routes: ['src/pages/Authorized'],
-      authority: ['admin', 'user'],
+      component: '../layouts/BlankLayout',
       routes: [
         {
-          path: '/',
-          name: 'welcome',
-          icon: 'smile',
-          component: './Welcome',
-        },
-        {
-          path: '/report',
-          name: 'report',
-          icon: 'file-text',
-          routes:[
+          path: '/user',
+          component: '../layouts/UserLayout',
+          routes: [
             {
-              name:'manage-report',
-              path:'/report/manage',
-              icon:'setting',
-              component:'./report/manage-report'
+              path: '/user',
+              redirect: '/user/login',
             },
             {
-              name:'edit-report',
-              path:'/report/edit',
-              icon:'edit',
-              component:'./report/edit-report'
+              name: 'login',
+              path: '/user/login',
+              component: './user/login',
+            },
+            {
+              name: 'register',
+              path: '/user/register',
+              component: './user/register',
+            },
+            {
+              component: '404',
+            },
+          ],
+        },
+        {
+          path: '/',
+          Routes: ['src/pages/Authorized'],
+          authority: ['MANAGER', 'USER'],
+          component: '../layouts/BasicLayout',
+          routes: [
+            {
+              //name: 'success',
+              path: '/result/success',
+              hideInMenu: true,
+              authority: ['MANAGER', 'USER'],
+              component: './result/success',
+            },
+            {
+              path: '/',
+              name: 'welcome',
+              icon: 'smile',
+              authority: ['ADMIN', 'MANAGER', 'USER'],
+              component: './Welcome',
+            },
+            {
+              path: '/report',
+              name: 'report',
+              icon: 'file-text',
+              authority: ['MANAGER', 'USER'],
+              routes: [
+                {
+                  name: 'day-report',
+                  path: '/report/day',
+                  icon: 'setting',
+                  routes: [
+                    {
+                      path: '/report/day',
+                      authority: ['MANAGER', 'USER'],
+                      component: './report/day-report',
+                    },
+                    {
+                      name: 'new',
+                      path: '/report/day/new',
+                      hideInMenu: true,
+                      authority: ['MANAGER', 'USER'],
+                      component: './report/day-report/new',
+                    },
+                    {
+                      name: 'detail',
+                      path: '/report/day/detail/:id',
+                      hideInMenu: true,
+                      authority: ['MANAGER', 'USER'],
+                      component: './report/day-report/detail',
+                    },
+                  ],
+                },
+                {
+                  name: 'week-report',
+                  path: '/report/week',
+                  icon: 'edit',
+                  authority: ['MANAGER', 'USER'],
+                  component: './report/week-report',
+                },
+              ],
+            },
+            {
+              path: '/review',
+              name: 'review',
+              icon: 'audit',
+              authority: ['MANAGER'],
+              routes: [
+                {
+                  path: '/review',
+                  redirect: '/review/check',
+                },
+                {
+                  path: '/review/check',
+                  name: 'check',
+                  authority: ['MANAGER'],
+                  component: './review/check',
+                },
+                {
+                  path: '/review/assess',
+                  name: 'assess',
+                  authority: ['MANAGER'],
+                  component: './review/assess',
+                },
+              ],
+            },
+            {
+              path: '/admin',
+              name: 'admin',
+              icon: 'setting',
+              Routes: ['src/pages/Authorized'],
+              authority: ['ADMIN'],
+              routes: [
+                {
+                  path: '/admin/user',
+                  name: 'user',
+                  component: './admin/user',
+                },
+                {
+                  path: '/admin/project',
+                  name: 'project',
+                  component: './admin/project',
+                },
+                {
+                  path: '/admin/role',
+                  name: 'role',
+                  component: './admin/role',
+                },
+              ],
+            },
+            {
+              name: 'account',
+              icon: 'user',
+              path: '/account',
+              routes: [
+                {
+                  name: 'settings',
+                  path: '/account/settings',
+                  authority: ['MANAGER', 'USER'],
+                  component: './account/settings',
+                },
+              ],
             },
             {
               component: './404',
-            }
-          ]
+            },
+          ],
         },
-        {
-          component: './404',
-        }
       ],
-    },
-    {
-      component: './404',
     },
   ],
   // Theme for antd: https://ant.design/docs/react/customize-theme-cn
@@ -166,13 +280,12 @@ export default {
     basePath: '/',
   },
   chainWebpack: webpackPlugin,
-  /*
+
   proxy: {
-    '/server/api/': {
-      target: 'https://preview.pro.ant.design/',
+    '/api': {
+      target: 'http://192.168.1.118:9008/',
       changeOrigin: true,
-      pathRewrite: { '^/server': '' },
+      pathRewrite: { '^/api': '' },
     },
   },
-  */
 };

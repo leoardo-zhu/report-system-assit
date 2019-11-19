@@ -1,4 +1,6 @@
-import { queryCurrent, query as queryUsers } from '@/services/user';
+import { queryCurrent, bindManager, query as queryUsers } from '@/services/user';
+import Cookies from 'js-cookie';
+import { router } from 'umi';
 const UserModel = {
   namespace: 'user',
   state: {
@@ -20,12 +22,39 @@ const UserModel = {
         payload: response,
       });
     },
+
+    *bindManager({ payload: { id, username } }, { call, put }) {
+      const response = yield call(bindManager, id);
+      yield put({
+        type: 'changeManager',
+        payload: username,
+      });
+    },
+
+    *logout(_, { put }) {
+      yield put({
+        type: 'removeCurrentUser',
+      });
+      Cookies.remove('Token');
+      Cookies.remove('Authority');
+      router.push('/user/login');
+    },
   },
   reducers: {
     saveCurrentUser(state, action) {
-      return { ...state, currentUser: action.payload || {} };
+      return { ...state, currentUser: action.payload };
     },
-
+    removeCurrentUser() {
+      return {};
+    },
+    changeManager(state, { payload }) {
+      const { currentUser } = state;
+      currentUser.managerName = payload;
+      return {
+        ...state,
+        currentUser,
+      };
+    },
     changeNotifyCount(
       state = {
         currentUser: {},

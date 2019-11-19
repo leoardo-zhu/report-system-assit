@@ -3,7 +3,7 @@
  * You can view component api by:
  * https://github.com/ant-design/ant-design-pro-layout
  */
-import ProLayout from '@ant-design/pro-layout';
+import ProLayout, { DefaultFooter } from '@ant-design/pro-layout';
 import React, { useEffect } from 'react';
 import Link from 'umi/link';
 import { connect } from 'dva';
@@ -24,7 +24,7 @@ const menuDataRender = menuList =>
 
 const footerRender = (_, defaultDom) => {
   if (!isAntDesignPro()) {
-    return defaultDom;
+    return <DefaultFooter copyright="2019 &nbsp;软工172 &nbsp;朱晓龙 出品" />;
   }
 
   return (

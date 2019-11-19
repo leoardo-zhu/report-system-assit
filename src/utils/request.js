@@ -3,7 +3,9 @@
  * 更详细的 api 文档: https://github.com/umijs/umi-request
  */
 import { extend } from 'umi-request';
-import { notification } from 'antd';
+import { notification, message } from 'antd';
+import Cookies from 'js-cookie';
+
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
   201: '新建或修改数据成功。',
@@ -39,6 +41,7 @@ const errorHandler = error => {
 
   return response;
 };
+
 /**
  * 配置request请求时的默认参数
  */
@@ -46,6 +49,22 @@ const errorHandler = error => {
 const request = extend({
   errorHandler,
   // 默认错误处理
-  credentials: 'include', // 默认请求是否带上cookie
+  // credentials: 'include', // 默认请求是否带上cookie
 });
+request.use(async (ctx, next) => {
+  const {
+    req: { options },
+  } = ctx;
+  ctx.req.options = {
+    ...options,
+    headers: {
+      Authorization: Cookies.get('Token'),
+    },
+  };
+  await next();
+  const { res } = ctx;
+  ctx.res = res.data;
+  if (res.flag === false) message.error(res.message);
+});
+
 export default request;

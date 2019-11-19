@@ -3,6 +3,7 @@ import Redirect from 'umi/redirect';
 import { connect } from 'dva';
 import pathToRegexp from 'path-to-regexp';
 import Authorized from '@/utils/Authorized';
+import Cookies from 'js-cookie';
 
 const getRouteAuthority = (path, routeData) => {
   let authorities;
@@ -34,11 +35,11 @@ const AuthComponent = ({
 }) => {
   const { currentUser } = user;
   const { routes = [] } = route;
-  const isLogin = currentUser && currentUser.name;
+  const isLogin = Cookies.get('Token') && Cookies.get('Authority');
   return (
     <Authorized
       authority={getRouteAuthority(location.pathname, routes) || ''}
-      noMatch={isLogin ? <Redirect to="/exception/403" /> : <Redirect to="/user/login" />}
+      noMatch={isLogin ? <Redirect to="/404" /> : <Redirect to="/user/login" />}
     >
       {children}
     </Authorized>
